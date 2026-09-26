@@ -3,23 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Executivo - Gestão</title>
+    <title>Dashboard - Gestão T&C</title>
+    <!-- Bootstrap 5 e Google Fonts (Inter) -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f4f7f6; }
-        .sidebar { min-height: 100vh; background: #1e293b; color: #fff; }
+        body { font-family: 'Inter', sans-serif; background-color: #0f111a; color: #e2e8f0; }
+        .sidebar { min-height: 100vh; background: #16192b; border-right: 1px solid #2d3250; }
         .sidebar .nav-link { color: #94a3b8; font-weight: 500; margin-bottom: 8px; border-radius: 8px; transition: all 0.3s; }
-        .sidebar .nav-link:hover, .sidebar .nav-link.active { background: #334155; color: #fff; }
-        .card-custom { border: none; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active { background: #ff2a85; color: #fff; box-shadow: 0 4px 15px rgba(255, 42, 133, 0.4); }
+        .card-custom { background: #1a1d30; border: 1px solid #2d3250; border-radius: 14px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); transition: transform 0.2s; }
+        .card-custom:hover { transform: translateY(-3px); border-color: #ff2a85; }
+        .text-pink { color: #ff2a85 !important; }
+        .bg-pink-gradient { background: linear-gradient(135deg, #ff2a85 0%, #d81b60 100%); color: #fff; }
+        .badge-pink { background-color: rgba(255, 42, 133, 0.2); color: #ff2a85; border: 1px solid #ff2a85; }
+        .form-control, .form-select { background-color: #16192b; border: 1px solid #2d3250; color: #fff; }
+        .form-control:focus, .form-select:focus { background-color: #16192b; border-color: #ff2a85; color: #fff; box-shadow: 0 0 0 0.25rem rgba(255, 42, 133, 0.25); }
+        .table { color: #e2e8f0; }
+        .table-dark-custom { background: #16192b; color: #fff; border-bottom: 2px solid #2d3250; }
     </style>
 </head>
 <body>
+
     <div class="container-fluid">
         <div class="row">
+            <!-- Sidebar Lateral -->
             <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse p-3">
-                <h4 class="text-white fw-bold mb-4 px-2">⚡ Gestão T&C</h4>
+                <h4 class="text-white fw-bold mb-4 px-2 d-flex align-items-center">
+                    <span class="text-pink me-2">⚡</span> T&C Personalizados
+                </h4>
                 <ul class="nav flex-column">
                     <li class="nav-item"><a class="nav-link active" href="/"><i class="fas fa-chart-pie me-2"></i> Dashboard</a></li>
                     <li class="nav-item"><a class="nav-link" href="/produtos"><i class="fas fa-boxes me-2"></i> Stock & Produtos</a></li>
@@ -27,52 +40,62 @@
                     <li class="nav-item"><a class="nav-link" href="/contas-pagar"><i class="fas fa-file-invoice-dollar me-2"></i> Contas a Pagar</a></li>
                 </ul>
             </nav>
+
+            <!-- Conteúdo Principal -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2>Visão Geral do Negócio</h2>
-                    <span class="text-muted small">Sistema Operacional Ativo</span>
+                <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3 border-secondary">
+                    <div>
+                        <h2 class="fw-bold text-white mb-0">Dashboard Overview</h2>
+                        <p class="text-muted small mb-0">Monitorize as vendas, receitas e stock do vosso negócio em tempo real.</p>
+                    </div>
+                    <span class="badge badge-pink px-3 py-2">Sistema Ativo 🚀</span>
                 </div>
+
+                <!-- Cartões de Métricas com Destaque Rosa -->
                 <div class="row g-4 mb-4">
                     <div class="col-md-4">
-                        <div class="card card-custom p-3 border-start border-4 border-success bg-white">
+                        <div class="card card-custom p-3 bg-pink-gradient border-0">
                             <div class="card-body">
-                                <h6 class="text-muted text-uppercase fs-7 fw-bold">Total de Vendas</h6>
-                                <h3 class="fw-bold text-dark mt-2">R$ {{ "%.2f"|format(total_vendas) }}</h3>
+                                <h6 class="text-uppercase fs-7 fw-bold text-white-50">Total de Vendas</h6>
+                                <h3 class="fw-bold mt-2 mb-0">R$ {{ "%.2f"|format(total_vendas) }}</h3>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="card card-custom p-3 border-start border-4 border-warning bg-white">
+                        <div class="card card-custom p-3">
                             <div class="card-body">
                                 <h6 class="text-muted text-uppercase fs-7 fw-bold">Contas a Pagar (Pendentes)</h6>
-                                <h3 class="fw-bold text-dark mt-2">R$ {{ "%.2f"|format(total_a_pagar) }}</h3>
+                                <h3 class="fw-bold text-white mt-2 mb-0">R$ {{ "%.2f"|format(total_a_pagar) }}</h3>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="card card-custom p-3 border-start border-4 border-secondary bg-white">
+                        <div class="card card-custom p-3">
                             <div class="card-body">
                                 <h6 class="text-muted text-uppercase fs-7 fw-bold">Contas Já Quitadas</h6>
-                                <h3 class="fw-bold text-dark mt-2">R$ {{ "%.2f"|format(total_pago) }}</h3>
+                                <h3 class="fw-bold text-white mt-2 mb-0">R$ {{ "%.2f"|format(total_pago) }}</h3>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="card card-custom p-4 bg-white">
-                    <h5 class="fw-bold text-danger mb-3"><i class="fas fa-exclamation-triangle me-2"></i> Alertas de Stock Crítico</h5>
-                    <ul class="list-group list-group-flush">
+
+                <!-- Secção de Alertas de Stock Crítico -->
+                <div class="card card-custom p-4">
+                    <h5 class="fw-bold text-pink mb-3"><i class="fas fa-exclamation-triangle me-2"></i> Alertas de Stock Crítico (&le; 5 unidades)</h5>
+                    <ul class="list-group list-group-flush bg-transparent">
                         {% for p in produtos_criticos %}
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <li class="list-group-item bg-transparent text-white border-secondary d-flex justify-content-between align-items-center">
                                 <span>{{ p.nome }}</span>
-                                <span class="badge bg-danger rounded-pill">Restam {{ p.estoque }} unidades</span>
+                                <span class="badge bg-danger">Restam {{ p.estoque }} unidades</span>
                             </li>
                         {% else %}
-                            <li class="list-group-item text-success border-0"><i class="fas fa-check-circle me-2"></i> Todos os produtos estão com níveis de stock seguros.</li>
+                            <li class="list-group-item bg-transparent text-success border-0"><i class="fas fa-check-circle me-2"></i> Todos os produtos estão com níveis de stock seguros.</li>
                         {% endfor %}
                     </ul>
                 </div>
             </main>
         </div>
     </div>
+
 </body>
 </html>
