@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Módulo de Equipe - T&C Personalizados</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-principal: #F8F5F2;
+            --bg-card: #FFFFFF;
+            --rosé-principal: #C98F98;
+            --rosé-claro: #E8CDD0;
+            --rosé-destaque: #B97884;
+            --texto-principal: #332D2D;
+            --texto-secundario: #817474;
+            --borda-cor: #E8DFDC;
+            --verde-sucesso: #6F9B7A;
+        }
+
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-principal); color: var(--texto-principal); }
+        h1, h2, h3, h4, h5 { font-family: 'Playfair Display', serif; color: var(--texto-principal); }
+
+        .sidebar { min-height: 100vh; background-color: var(--bg-card); border-right: 1px solid var(--borda-cor); padding: 24px 16px; }
+        .sidebar-brand { text-align: center; padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px solid var(--borda-cor); }
+        .sidebar-brand h5 { font-size: 1.1rem; letter-spacing: 1px; margin-bottom: 0; }
+        .sidebar-brand span { font-size: 0.75rem; color: var(--texto-secundario); text-transform: uppercase; letter-spacing: 2px; }
+
+        .sidebar .nav-link { color: var(--texto-secundario); font-weight: 500; padding: 10px 14px; margin-bottom: 6px; border-radius: 8px; transition: all 0.2s; display: flex; align-items: center; font-size: 0.95rem; }
+        .sidebar .nav-link i { width: 24px; color: var(--rosé-destaque); }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active { background-color: var(--rosé-claro); color: var(--texto-principal); font-weight: 600; }
+
+        .topbar { background-color: var(--bg-card); border-bottom: 1px solid var(--borda-cor); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+
+        .card-tc { background-color: var(--bg-card); border: 1px solid var(--borda-cor); border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(51, 45, 45, 0.03); margin-bottom: 24px; }
+        .form-control, .form-select { border-color: var(--borda-cor); background-color: #FAFAFA; font-size: 0.9rem; }
+        .form-control:focus, .form-select:focus { border-color: var(--rosé-principal); box-shadow: 0 0 0 0.2rem rgba(201, 143, 152, 0.25); background-color: #FFF; }
+        
+        .btn-tc { background-color: var(--rosé-principal); color: #FFF; border: none; font-weight: 500; padding: 8px 16px; border-radius: 8px; transition: background 0.2s; }
+        .btn-tc:hover { background-color: var(--rosé-destaque); color: #FFF; }
+    </style>
+</head>
+<body>
+
+    <div class="container-fluid p-0">
+        <div class="row g-0">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="sidebar-brand">
+                    <h5>T&C</h5>
+                    <span>Personalizados</span>
+                </div>
+                <ul class="nav flex-column">
+                    <li class="nav-item"><a class="nav-link" href="/"><i class="fas fa-home"></i> Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/produtos"><i class="fas fa-boxes"></i> Estoque & Produtos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/producao"><i class="fas fa-industry"></i> Produção</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/compras"><i class="fas fa-shopping-basket"></i> Compras</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/financeiro"><i class="fas fa-file-invoice-dollar"></i> Financeiro</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/relatorios"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/equipe"><i class="fas fa-users"></i> Equipe</a></li>
+                </ul>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="topbar my-3 rounded-3">
+                    <div>
+                        <h2 class="h4 mb-0 fw-bold">Módulo de Equipe</h2>
+                        <p class="text-muted small mb-0">Gestão de colaboradores, responsáveis e atribuição de atividades</p>
+                    </div>
+                    <span class="text-muted small"><i class="fas fa-user-friends me-1"></i> Gestão Interna</span>
+                </div>
+
+                <div class="py-3">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for cat, msg in messages %}
+                                <div class="alert alert-success border-0 shadow-sm mb-4">{{ msg }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <!-- Formulário de Cadastro de Funcionário -->
+                    <div class="card-tc">
+                        <h5 class="fw-bold mb-3" style="font-size: 1.1rem;"><i class="fas fa-user-plus me-2 text-secondary"></i> Registar Novo Membro da Equipe</h5>
+                        <form method="POST">
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-5">
+                                    <label class="form-label small fw-bold text-muted">Nome do Colaborador</label>
+                                    <input type="text" name="nome" class="form-control" placeholder="Ex: Taniele / Irmã / Funcionário" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold text-muted">Cargo / Função Principal</label>
+                                    <input type="text" name="cargo" class="form-control" placeholder="Ex: Produção e Acabamento" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small fw-bold text-muted">Telefone / Contato</label>
+                                    <input type="text" name="telefone" class="form-control" placeholder="(11) 99999-9999">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-tc">Adicionar à Equipe</button>
+                        </form>
+                    </div>
+
+                    <!-- Lista de Membros da Equipe -->
+                    <div class="card-tc p-4 mb-4">
+                        <h5 class="fw-bold mb-3" style="font-size: 1.1rem;"><i class="fas id-badge me-2 text-secondary"></i> Colaboradores Ativos</h5>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light text-uppercase fs-7 text-muted">
+                                    <tr>
+                                        <th>Nome</th>
+                                        <th>Cargo / Função</th>
+                                        <th>Telefone</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for f in funcionarios %}
+                                    <tr>
+                                        <td class="fw-bold text-dark">{{ f.nome }}</td>
+                                        <td>{{ f.cargo }}</td>
+                                        <td>{{ f.telefone or '-' }}</td>
+                                        <td><span class="badge bg-success">{{ f.status }}</span></td>
+                                    </tr>
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="4" class="text-center py-4 text-muted">Nenhum funcionário registado ainda.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

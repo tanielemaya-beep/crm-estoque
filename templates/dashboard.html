@@ -3,95 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Gestão T&C</title>
-    <!-- Bootstrap 5 e Google Fonts (Inter) -->
+    <title>Dashboard - T&C Personalizados</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #0f111a; color: #e2e8f0; }
-        .sidebar { min-height: 100vh; background: #16192b; border-right: 1px solid #2d3250; }
-        .sidebar .nav-link { color: #94a3b8; font-weight: 500; margin-bottom: 8px; border-radius: 8px; transition: all 0.3s; }
-        .sidebar .nav-link:hover, .sidebar .nav-link.active { background: #ff2a85; color: #fff; box-shadow: 0 4px 15px rgba(255, 42, 133, 0.4); }
-        .card-custom { background: #1a1d30; border: 1px solid #2d3250; border-radius: 14px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); transition: transform 0.2s; }
-        .card-custom:hover { transform: translateY(-3px); border-color: #ff2a85; }
-        .text-pink { color: #ff2a85 !important; }
-        .bg-pink-gradient { background: linear-gradient(135deg, #ff2a85 0%, #d81b60 100%); color: #fff; }
-        .badge-pink { background-color: rgba(255, 42, 133, 0.2); color: #ff2a85; border: 1px solid #ff2a85; }
-        .form-control, .form-select { background-color: #16192b; border: 1px solid #2d3250; color: #fff; }
-        .form-control:focus, .form-select:focus { background-color: #16192b; border-color: #ff2a85; color: #fff; box-shadow: 0 0 0 0.25rem rgba(255, 42, 133, 0.25); }
-        .table { color: #e2e8f0; }
-        .table-dark-custom { background: #16192b; color: #fff; border-bottom: 2px solid #2d3250; }
+        :root {
+            --bg-principal: #F8F5F2;
+            --bg-card: #FFFFFF;
+            --rosé-principal: #C98F98;
+            --rosé-claro: #E8CDD0;
+            --rosé-destaque: #B97884;
+            --texto-principal: #332D2D;
+            --texto-secundario: #817474;
+            --borda-cor: #E8DFDC;
+            --verde-sucesso: #6F9B7A;
+            --amarelo-atencao: #C69B52;
+            --vermelho-alerta: #B96D6D;
+        }
+
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-principal); color: var(--texto-principal); }
+        h1, h2, h3, h4, h5 { font-family: 'Playfair Display', serif; color: var(--texto-principal); }
+
+        .sidebar { min-height: 100vh; background-color: var(--bg-card); border-right: 1px solid var(--borda-cor); padding: 24px 16px; }
+        .sidebar-brand { text-align: center; padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px solid var(--borda-cor); }
+        .sidebar-brand h5 { font-size: 1.1rem; letter-spacing: 1px; margin-bottom: 0; }
+        .sidebar-brand span { font-size: 0.75rem; color: var(--texto-secundario); text-transform: uppercase; letter-spacing: 2px; }
+
+        .sidebar .nav-link { color: var(--texto-secundario); font-weight: 500; padding: 10px 14px; margin-bottom: 6px; border-radius: 8px; transition: all 0.2s; display: flex; align-items: center; font-size: 0.95rem; }
+        .sidebar .nav-link i { width: 24px; color: var(--rosé-destaque); }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active { background-color: var(--rosé-claro); color: var(--texto-principal); font-weight: 600; }
+
+        .topbar { background-color: var(--bg-card); border-bottom: 1px solid var(--borda-cor); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+
+        .card-tc { background-color: var(--bg-card); border: 1px solid var(--borda-cor); border-radius: 12px; box-shadow: 0 2px 8px rgba(51, 45, 45, 0.03); position: relative; overflow: hidden; transition: transform 0.2s; }
+        .card-tc::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background-color: var(--rosé-principal); }
+        .card-tc:hover { transform: translateY(-2px); }
+
+        .card-title-tc { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: var(--texto-secundario); font-weight: 600; margin-bottom: 8px; }
+        .card-value-tc { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; color: var(--texto-principal); margin-bottom: 0; }
+
+        .alert-card { background-color: var(--bg-card); border: 1px solid var(--borda-cor); border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(51, 45, 45, 0.03); }
+        .badge-alerta { background-color: rgba(185, 109, 109, 0.1); color: var(--vermelho-alerta); border: 1px solid rgba(185, 109, 109, 0.2); padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 500; }
     </style>
 </head>
 <body>
 
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar Lateral -->
-            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse p-3">
-                <h4 class="text-white fw-bold mb-4 px-2 d-flex align-items-center">
-                    <span class="text-pink me-2">⚡</span> T&C Personalizados
-                </h4>
+    <div class="container-fluid p-0">
+        <div class="row g-0">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="sidebar-brand">
+                    <h5>T&C</h5>
+                    <span>Personalizados</span>
+                </div>
                 <ul class="nav flex-column">
-                    <li class="nav-item"><a class="nav-link active" href="/"><i class="fas fa-chart-pie me-2"></i> Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/produtos"><i class="fas fa-boxes me-2"></i> Stock & Produtos</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/vendas"><i class="fas fa-cash-register me-2"></i> Vendas</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/contas-pagar"><i class="fas fa-file-invoice-dollar me-2"></i> Contas a Pagar</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/"><i class="fas fa-home"></i> Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/produtos"><i class="fas fa-boxes"></i> Estoque & Produtos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/producao"><i class="fas fa-industry"></i> Produção</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/compras"><i class="fas fa-shopping-basket"></i> Compras</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/financeiro"><i class="fas fa-file-invoice-dollar"></i> Financeiro</a></li>
                 </ul>
+                <div class="mt-5 px-3 text-muted small">
+                    <i class="fas fa-circle text-success" style="font-size: 0.5rem;"></i> Controlo Interno Ativo
+                </div>
             </nav>
 
-            <!-- Conteúdo Principal -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
-                <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3 border-secondary">
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="topbar my-3 rounded-3">
                     <div>
-                        <h2 class="fw-bold text-white mb-0">Dashboard Overview</h2>
-                        <p class="text-muted small mb-0">Monitorize as vendas, receitas e stock do vosso negócio em tempo real.</p>
+                        <h2 class="h4 mb-0 fw-bold">Dashboard</h2>
+                        <p class="text-muted small mb-0">Visão geral da operação da T&C Personalizados</p>
                     </div>
-                    <span class="badge badge-pink px-3 py-2">Sistema Ativo 🚀</span>
-                </div>
-
-                <!-- Cartões de Métricas com Destaque Rosa -->
-                <div class="row g-4 mb-4">
-                    <div class="col-md-4">
-                        <div class="card card-custom p-3 bg-pink-gradient border-0">
-                            <div class="card-body">
-                                <h6 class="text-uppercase fs-7 fw-bold text-white-50">Total de Vendas</h6>
-                                <h3 class="fw-bold mt-2 mb-0">R$ {{ "%.2f"|format(total_vendas) }}</h3>
-                            </div>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold" style="width: 36px; height: 36px; background-color: var(--rosé-principal); font-size: 0.9rem;">
+                            T
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card card-custom p-3">
-                            <div class="card-body">
-                                <h6 class="text-muted text-uppercase fs-7 fw-bold">Contas a Pagar (Pendentes)</h6>
-                                <h3 class="fw-bold text-white mt-2 mb-0">R$ {{ "%.2f"|format(total_a_pagar) }}</h3>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card card-custom p-3">
-                            <div class="card-body">
-                                <h6 class="text-muted text-uppercase fs-7 fw-bold">Contas Já Quitadas</h6>
-                                <h3 class="fw-bold text-white mt-2 mb-0">R$ {{ "%.2f"|format(total_pago) }}</h3>
-                            </div>
-                        </div>
+                        <span class="fw-semibold small">Taniele ▾</span>
                     </div>
                 </div>
 
-                <!-- Secção de Alertas de Stock Crítico -->
-                <div class="card card-custom p-4">
-                    <h5 class="fw-bold text-pink mb-3"><i class="fas fa-exclamation-triangle me-2"></i> Alertas de Stock Crítico (&le; 5 unidades)</h5>
-                    <ul class="list-group list-group-flush bg-transparent">
-                        {% for p in produtos_criticos %}
-                            <li class="list-group-item bg-transparent text-white border-secondary d-flex justify-content-between align-items-center">
-                                <span>{{ p.nome }}</span>
-                                <span class="badge bg-danger">Restam {{ p.estoque }} unidades</span>
-                            </li>
-                        {% else %}
-                            <li class="list-group-item bg-transparent text-success border-0"><i class="fas fa-check-circle me-2"></i> Todos os produtos estão com níveis de stock seguros.</li>
-                        {% endfor %}
-                    </ul>
+                <div class="py-3">
+                    <!-- Cards Operacionais -->
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-3">
+                            <div class="card-tc p-4" style="border-left-color: var(--rosé-destaque);">
+                                <div class="card-title-tc"><i class="fas fa-industry me-1"></i> Produção</div>
+                                <div class="card-value-tc">{{ producao_ativa }}</div>
+                                <span class="text-muted small mt-1 d-block">Itens em curso</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card-tc p-4" style="border-left-color: var(--vermelho-alerta);">
+                                <div class="card-title-tc"><i class="fas fa-box-open me-1"></i> Estoque</div>
+                                <div class="card-value-tc">{{ estoque_critico }}</div>
+                                <span class="text-muted small mt-1 d-block">Itens em alerta crítico</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card-tc p-4" style="border-left-color: var(--amarelo-atencao);">
+                                <div class="card-title-tc"><i class="fas fa-file-invoice me-1"></i> A Pagar</div>
+                                <div class="card-value-tc">R$ {{ "%.2f"|format(total_a_pagar) }}</div>
+                                <span class="text-muted small mt-1 d-block">Despesas pendentes</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card-tc p-4" style="border-left-color: var(--verde-sucesso);">
+                                <div class="card-title-tc"><i class="fas fa-shopping-cart me-1"></i> Compras</div>
+                                <div class="card-value-tc">{{ compras_pendentes }}</div>
+                                <span class="text-muted small mt-1 d-block">Solicitações abertas</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Secção de Alertas e Atenção -->
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="alert-card h-100">
+                                <h5 class="fw-bold mb-3" style="font-size: 1.1rem;">⚠️ Estoque Crítico</h5>
+                                <ul class="list-group list-group-flush">
+                                    {% for item in itens_alerta %}
+                                        <li class="list-group-item bg-transparent px-0 d-flex justify-content-between align-items-center">
+                                            <span>{{ item.nome }} <small class="text-muted">({{ item.categoria }})</small></span>
+                                            <span class="badge-alerta">{{ item.estoque_atual }} un. (Mín: {{ item.estoque_minimo }})</span>
+                                        </li>
+                                    {% else %}
+                                        <li class="list-group-item bg-transparent px-0 text-success border-0">
+                                            <i class="fas fa-check-circle me-2"></i> Nenhum item abaixo do estoque mínimo.
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="alert-card h-100">
+                                <h5 class="fw-bold mb-3" style="font-size: 1.1rem;">💰 Contas Próximas / Pendentes</h5>
+                                <ul class="list-group list-group-flush">
+                                    {% for conta in contas_atencao %}
+                                        <li class="list-group-item bg-transparent px-0 d-flex justify-content-between align-items-center">
+                                            <span>{{ conta.descricao }}</span>
+                                            <span class="fw-bold">R$ {{ "%.2f"|format(conta.valor) }} <small class="text-muted">(Venc: {{ conta.data_vencimento }})</small></span>
+                                        </li>
+                                    {% else %}
+                                        <li class="list-group-item bg-transparent px-0 text-success border-0">
+                                            <i class="fas fa-check-circle me-2"></i> Nenhuma conta pendente no momento.
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </main>
         </div>

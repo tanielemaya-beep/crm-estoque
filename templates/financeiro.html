@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Módulo Financeiro - T&C Personalizados</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-principal: #F8F5F2;
+            --bg-card: #FFFFFF;
+            --rosé-principal: #C98F98;
+            --rosé-claro: #E8CDD0;
+            --rosé-destaque: #B97884;
+            --texto-principal: #332D2D;
+            --texto-secundario: #817474;
+            --borda-cor: #E8DFDC;
+            --verde-sucesso: #6F9B7A;
+            --amarelo-atencao: #C69B52;
+            --vermelho-alerta: #B96D6D;
+        }
+
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-principal); color: var(--texto-principal); }
+        h1, h2, h3, h4, h5 { font-family: 'Playfair Display', serif; color: var(--texto-principal); }
+
+        .sidebar { min-height: 100vh; background-color: var(--bg-card); border-right: 1px solid var(--borda-cor); padding: 24px 16px; }
+        .sidebar-brand { text-align: center; padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px solid var(--borda-cor); }
+        .sidebar-brand h5 { font-size: 1.1rem; letter-spacing: 1px; margin-bottom: 0; }
+        .sidebar-brand span { font-size: 0.75rem; color: var(--texto-secundario); text-transform: uppercase; letter-spacing: 2px; }
+
+        .sidebar .nav-link { color: var(--texto-secundario); font-weight: 500; padding: 10px 14px; margin-bottom: 6px; border-radius: 8px; transition: all 0.2s; display: flex; align-items: center; font-size: 0.95rem; }
+        .sidebar .nav-link i { width: 24px; color: var(--rosé-destaque); }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active { background-color: var(--rosé-claro); color: var(--texto-principal); font-weight: 600; }
+
+        .topbar { background-color: var(--bg-card); border-bottom: 1px solid var(--borda-cor); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+
+        .card-tc { background-color: var(--bg-card); border: 1px solid var(--borda-cor); border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(51, 45, 45, 0.03); margin-bottom: 24px; }
+        .form-control, .form-select { border-color: var(--borda-cor); background-color: #FAFAFA; font-size: 0.9rem; }
+        .form-control:focus, .form-select:focus { border-color: var(--rosé-principal); box-shadow: 0 0 0 0.2rem rgba(201, 143, 152, 0.25); background-color: #FFF; }
+        
+        .btn-tc { background-color: var(--rosé-principal); color: #FFF; border: none; font-weight: 500; padding: 8px 16px; border-radius: 8px; transition: background 0.2s; }
+        .btn-tc:hover { background-color: var(--rosé-destaque); color: #FFF; }
+    </style>
+</head>
+<body>
+
+    <div class="container-fluid p-0">
+        <div class="row g-0">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="sidebar-brand">
+                    <h5>T&C</h5>
+                    <span>Personalizados</span>
+                </div>
+                <ul class="nav flex-column">
+                    <li class="nav-item"><a class="nav-link" href="/"><i class="fas fa-home"></i> Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/produtos"><i class="fas fa-boxes"></i> Estoque & Produtos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/producao"><i class="fas fa-industry"></i> Produção</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/compras"><i class="fas fa-shopping-basket"></i> Compras</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/financeiro"><i class="fas fa-file-invoice-dollar"></i> Financeiro</a></li>
+                </ul>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="topbar my-3 rounded-3">
+                    <div>
+                        <h2 class="h4 mb-0 fw-bold">Módulo Financeiro</h2>
+                        <p class="text-muted small mb-0">Controlo de contas a pagar, recebimentos, despesas e fluxo de caixa</p>
+                    </div>
+                    <span class="text-muted small"><i class="fas fa-wallet me-1"></i> Caixa Operacional</span>
+                </div>
+
+                <div class="py-3">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for cat, msg in messages %}
+                                <div class="alert alert-{{ 'danger' if cat == 'danger' else 'success' }} border-0 shadow-sm mb-4">{{ msg }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <!-- Resumo Financeiro (Cards) -->
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-3">
+                            <div class="card-tc mb-0" style="border-left: 4px solid var(--vermelho-alerta);">
+                                <small class="text-uppercase text-muted fw-bold" style="font-size: 0.75rem;">A Pagar (Pendente)</small>
+                                <h4 class="fw-bold mt-2 mb-0">R$ {{ "%.2f"|format(total_a_pagar) }}</h4>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card-tc mb-0" style="border-left: 4px solid var(--verde-sucesso);">
+                                <small class="text-uppercase text-muted fw-bold" style="font-size: 0.75rem;">A Receber (Pendente)</small>
+                                <h4 class="fw-bold mt-2 mb-0">R$ {{ "%.2f"|format(total_a_receber) }}</h4>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card-tc mb-0" style="border-left: 4px solid var(--amarelo-atencao);">
+                                <small class="text-uppercase text-muted fw-bold" style="font-size: 0.75rem;">Total Recebido (Quitado)</small>
+                                <h4 class="fw-bold mt-2 mb-0">R$ {{ "%.2f"|format(total_recebido) }}</h4>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card-tc mb-0" style="border-left: 4px solid var(--rosé-destaque);">
+                                <small class="text-uppercase text-muted fw-bold" style="font-size: 0.75rem;">Saldo Operacional</small>
+                                <h4 class="fw-bold mt-2 mb-0">R$ {{ "%.2f"|format(saldo_caixa) }}</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botão e Formulário de Lançamento -->
+                    <div class="mb-4">
+                        <button class="btn btn-tc" type="button" data-bs-toggle="collapse" data-bs-target="#formLancamento">
+                            <i class="fas fa-plus me-1"></i> Novo Lançamento Financeiro
+                        </button>
+                    </div>
+
+                    <div class="collapse mb-4" id="formLancamento">
+                        <div class="card-tc">
+                            <h5 class="fw-bold mb-3" style="font-size: 1.1rem;">Registar Receita ou Despesa</h5>
+                            <form method="POST">
+                                <input type="hidden" name="acao" value="lancar">
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-bold text-muted">Descrição</label>
+                                        <input type="text" name="descricao" class="form-control" placeholder="Ex: Compra de tintas / Venda lote agendas" required>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label small fw-bold text-muted">Natureza</label>
+                                        <select name="natureza" class="form-select" required>
+                                            <option value="Pagar">Conta a Pagar (Despesa)</option>
+                                            <option value="Receber">Conta a Receber (Receita)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label small fw-bold text-muted">Categoria</label>
+                                        <input type="text" name="categoria" class="form-control" placeholder="Ex: Insumos, Operacional, Vendas" required>
+                                    </div>
+                                </div>
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-bold text-muted">Valor (R$)</label>
+                                        <input type="number" step="0.01" name="valor" class="form-control" placeholder="0.00" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-bold text-muted">Data de Vencimento</label>
+                                        <input type="date" name="data_vencimento" class="form-control" required>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-dark">Efetuar Lançamento</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Tabela de Transações -->
+                    <div class="card-tc p-4">
+                        <h5 class="fw-bold mb-3" style="font-size: 1.1rem;"><i class="fas fa-list me-2 text-secondary"></i> Histórico e Lançamentos</h5>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light text-uppercase fs-7 text-muted">
+                                    <tr>
+                                        <th>Descrição</th>
+                                        <th>Tipo</th>
+                                        <th>Categoria</th>
+                                        <th>Valor</th>
+                                        <th>Vencimento</th>
+                                        <th>Status</th>
+                                        <th class="text-end">Ação</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for t in transacoes %}
+                                    <tr>
+                                        <td class="fw-bold text-dark">{{ t.descricao }}</td>
+                                        <td>
+                                            <span class="badge bg-{{ 'danger' if t.natureza == 'Pagar' else 'success' }}">
+                                                {{ t.natureza }}
+                                            </span>
+                                        </td>
+                                        <td>{{ t.categoria }}</td>
+                                        <td class="fw-bold">R$ {{ "%.2f"|format(t.valor) }}</td>
+                                        <td>{{ t.data_vencimento }}</td>
+                                        <td>
+                                            <span class="badge bg-{{ 'warning text-dark' if t.status == 'Pendente' else 'secondary' }}">
+                                                {{ t.status }}
+                                            </span>
+                                        </td>
+                                        <td class="text-end">
+                                            {% if t.status == 'Pendente' %}
+                                                <a href="/quitar-transacao/{{ t.id }}" class="btn btn-sm btn-outline-success">Liquidar</a>
+                                            {% else %}
+                                                <span class="text-muted small">Quitado</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="7" class="text-center py-4 text-muted">Nenhum registo financeiro encontrado.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

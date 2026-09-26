@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controlo de Produção - T&C Personalizados</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-principal: #F8F5F2;
+            --bg-card: #FFFFFF;
+            --rosé-principal: #C98F98;
+            --rosé-claro: #E8CDD0;
+            --rosé-destaque: #B97884;
+            --texto-principal: #332D2D;
+            --texto-secundario: #817474;
+            --borda-cor: #E8DFDC;
+            --verde-sucesso: #6F9B7A;
+            --amarelo-atencao: #C69B52;
+            --vermelho-alerta: #B96D6D;
+        }
+
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-principal); color: var(--texto-principal); }
+        h1, h2, h3, h4, h5 { font-family: 'Playfair Display', serif; color: var(--texto-principal); }
+
+        .sidebar { min-height: 100vh; background-color: var(--bg-card); border-right: 1px solid var(--borda-cor); padding: 24px 16px; }
+        .sidebar-brand { text-align: center; padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px solid var(--borda-cor); }
+        .sidebar-brand h5 { font-size: 1.1rem; letter-spacing: 1px; margin-bottom: 0; }
+        .sidebar-brand span { font-size: 0.75rem; color: var(--texto-secundario); text-transform: uppercase; letter-spacing: 2px; }
+
+        .sidebar .nav-link { color: var(--texto-secundario); font-weight: 500; padding: 10px 14px; margin-bottom: 6px; border-radius: 8px; transition: all 0.2s; display: flex; align-items: center; font-size: 0.95rem; }
+        .sidebar .nav-link i { width: 24px; color: var(--rosé-destaque); }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active { background-color: var(--rosé-claro); color: var(--texto-principal); font-weight: 600; }
+
+        .topbar { background-color: var(--bg-card); border-bottom: 1px solid var(--borda-cor); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+
+        .card-tc { background-color: var(--bg-card); border: 1px solid var(--borda-cor); border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(51, 45, 45, 0.03); margin-bottom: 24px; }
+        .form-control, .form-select { border-color: var(--borda-cor); background-color: #FAFAFA; font-size: 0.9rem; }
+        .form-control:focus, .form-select:focus { border-color: var(--rosé-principal); box-shadow: 0 0 0 0.2rem rgba(201, 143, 152, 0.25); background-color: #FFF; }
+        
+        .btn-tc { background-color: var(--rosé-principal); color: #FFF; border: none; font-weight: 500; padding: 8px 16px; border-radius: 8px; transition: background 0.2s; }
+        .btn-tc:hover { background-color: var(--rosé-destaque); color: #FFF; }
+
+        .etapa-item { font-size: 0.85rem; padding: 2px 0; color: var(--texto-secundario); }
+        .etapa-concluida { color: var(--verde-sucesso); text-decoration: line-through; }
+        .etapa-atual { color: var(--rosé-destaque); font-weight: 600; }
+    </style>
+</head>
+<body>
+
+    <div class="container-fluid p-0">
+        <div class="row g-0">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="sidebar-brand">
+                    <h5>T&C</h5>
+                    <span>Personalizados</span>
+                </div>
+                <ul class="nav flex-column">
+                    <li class="nav-item"><a class="nav-link" href="/"><i class="fas fa-home"></i> Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/produtos"><i class="fas fa-boxes"></i> Estoque & Produtos</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/producao"><i class="fas fa-industry"></i> Produção</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/compras"><i class="fas fa-shopping-basket"></i> Compras</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/financeiro"><i class="fas fa-file-invoice-dollar"></i> Financeiro</a></li>
+                </ul>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="topbar my-3 rounded-3">
+                    <div>
+                        <h2 class="h4 mb-0 fw-bold">Módulo de Produção</h2>
+                        <p class="text-muted small mb-0">Gestão da fila de fabrico, etapas e prazos internos</p>
+                    </div>
+                    <span class="text-muted small"><i class="fas fa-industry me-1"></i> Linha de Montagem</span>
+                </div>
+
+                <div class="py-3">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for cat, msg in messages %}
+                                <div class="alert alert-{{ 'danger' if cat == 'danger' else 'success' }} border-0 shadow-sm mb-4">{{ msg }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <!-- Botão para Abrir Nova Ordem -->
+                    <div class="mb-4">
+                        <button class="btn btn-tc" type="button" data-bs-toggle="collapse" data-bs-target="#formNovaOrdem">
+                            <i class="fas fa-plus me-1"></i> Nova Ordem de Produção
+                        </button>
+                    </div>
+
+                    <!-- Formulário Recolhível de Nova Ordem -->
+                    <div class="collapse mb-4" id="formNovaOrdem">
+                        <div class="card-tc">
+                            <h5 class="fw-bold mb-3" style="font-size: 1.1rem;">Abrir Ordem de Fabrico</h5>
+                            <form method="POST">
+                                <input type="hidden" name="acao" value="criar">
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-bold text-muted">Produto / Item</label>
+                                        <input type="text" name="produto" class="form-control" placeholder="Ex: Caneca personalizada" required>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label small fw-bold text-muted">Quantidade</label>
+                                        <input type="number" name="quantidade" class="form-control" placeholder="50" required>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label small fw-bold text-muted">Prazo Interno</label>
+                                        <input type="date" name="prazo" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label small fw-bold text-muted">Responsável</label>
+                                        <input type="text" name="responsavel" class="form-control" placeholder="Ex: João / Taniele" required>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <label class="form-label small fw-bold text-muted">Materiais Utilizados (Insumos)</label>
+                                        <input type="text" name="materiais" class="form-control" placeholder="Ex: Caneca branca, Papel sublimático, Tinta CMYK">
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold text-muted">Observações</label>
+                                    <textarea name="observacoes" class="form-control" rows="2" placeholder="Detalhes ou acabamentos especiais"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-dark">Lançar na Fila de Produção</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Filtros de Status -->
+                    <div class="d-flex gap-2 mb-4 flex-wrap">
+                        <a href="/producao?status=Todos" class="btn btn-sm {{ 'btn-dark' if filtro_atual == 'Todos' else 'btn-outline-secondary' }}">Todos</a>
+                        <a href="/producao?status=Em produção" class="btn btn-sm {{ 'btn-dark' if filtro_atual == 'Em produção' else 'btn-outline-secondary' }}">Em Produção</a>
+                        <a href="/producao?status=Pausado" class="btn btn-sm {{ 'btn-dark' if filtro_atual == 'Pausado' else 'btn-outline-secondary' }}">Pausados</a>
+                        <a href="/producao?status=Retrabalho" class="btn btn-sm {{ 'btn-dark' if filtro_atual == 'Retrabalho' else 'btn-outline-secondary' }}">Retrabalho</a>
+                        <a href="/producao?status=Finalizado" class="btn btn-sm {{ 'btn-dark' if filtro_atual == 'Finalizado' else 'btn-outline-secondary' }}">Finalizados</a>
+                    </div>
+
+                    <!-- Listagem de Ordens em Cartões Detalhados -->
+                    <div class="row g-4">
+                        {% for ordem in ordens %}
+                        <div class="col-md-6">
+                            <div class="card-tc h-100 mb-0">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div>
+                                        <span class="badge bg-light text-dark border fw-bold">{{ ordem.codigo }}</span>
+                                        <h5 class="fw-bold mt-2 mb-1">{{ ordem.produto }} <span class="text-muted fs-6">({{ ordem.quantidade }} un.)</span></h5>
+                                    </div>
+                                    <span class="badge bg-{{ 'success' if ordem.status == 'Finalizado' else ('warning text-dark' if ordem.status == 'Em produção' else ('danger' if ordem.status == 'Retrabalho' else 'secondary')) }}">
+                                        {{ ordem.status }}
+                                    </span>
+                                </div>
+
+                                <div class="small text-muted mb-3">
+                                    <div><i class="fas fa-user me-1 text-secondary"></i> <strong>Responsável:</strong> {{ ordem.responsavel }}</div>
+                                    <div><i class="far fa-calendar-alt me-1 text-secondary"></i> <strong>Início:</strong> {{ ordem.data_inicio.strftime('%d/%m/%Y') }} | <strong>Prazo:</strong> {{ ordem.prazo or 'Não definido' }}</div>
+                                    {% if ordem.materiais %}
+                                        <div><i class="fas fa-box-open me-1 text-secondary"></i> <strong>Materiais:</strong> {{ ordem.materiais }}</div>
+                                    {% endif %}
+                                    {% if ordem.observacoes %}
+                                        <div class="mt-1 text-dark fst-italic">Obs: "{{ ordem.observacoes }}"</div>
+                                    {% endif %}
+                                </div>
+
+                                <hr class="text-muted opacity-25">
+
+                                <!-- Progresso das Etapas -->
+                                <div class="mb-3">
+                                    <div class="small fw-bold mb-2" style="color: var(--texto-secundario);">ETAPAS DO PROCESSO:</div>
+                                    {% set etapas_lista = ['Separação de material', 'Impressão', 'Sublimação / Aplicação', 'Acabamento', 'Conferência', 'Finalizado'] %}
+                                    <ul class="list-unstyled mb-0">
+                                        {% for et in etapas_lista %}
+                                            <li class="etapa-item">
+                                                {% if etapas_lista.index(et) < etapas_lista.index(ordem.etapa) %}
+                                                    <i class="fas fa-check-circle text-success me-1"></i> <span class="etapa-concluida">{{ et }}</span>
+                                                {% elif et == ordem.etapa %}
+                                                    <i class="fas fa-dot-circle me-1" style="color: var(--rosé-destaque);"></i> <span class="etapa-atual">{{ et }} (Atual)</span>
+                                                {% else %}
+                                                    <i class="far fa-circle text-muted me-1"></i> <span class="text-muted">{{ et }}</span>
+                                                {% endif %}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+
+                                <!-- Ações: Avançar Etapa ou Mudar Status -->
+                                <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top border-light">
+                                    {% if ordem.status != 'Finalizado' %}
+                                        <form method="POST">
+                                            <input type="hidden" name="acao" value="avancar">
+                                            <input type="hidden" name="ordem_id" value="{{ ordem.id }}">
+                                            <button type="submit" class="btn btn-sm btn-outline-success"><i class="fas fa-arrow-right me-1"></i> Avançar Etapa</button>
+                                        </form>
+                                    {% else %}
+                                        <span class="text-success small fw-bold"><i class="fas fa-check-circle"></i> Concluído com Sucesso</span>
+                                    {% endif %}
+
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-light border dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                            Status
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <form method="POST">
+                                                    <input type="hidden" name="acao" value="mudar_status">
+                                                    <input type="hidden" name="ordem_id" value="{{ ordem.id }}">
+                                                    <input type="hidden" name="novo_status" value="Em produção">
+                                                    <button type="submit" class="dropdown-item">Em produção</button>
+                                                </form>
+                                            </li>
+                                            <li>
+                                                <form method="POST">
+                                                    <input type="hidden" name="acao" value="mudar_status">
+                                                    <input type="hidden" name="ordem_id" value="{{ ordem.id }}">
+                                                    <input type="hidden" name="novo_status" value="Pausado">
+                                                    <button type="submit" class="dropdown-item">Pausado</button>
+                                                </form>
+                                            </li>
+                                            <li>
+                                                <form method="POST">
+                                                    <input type="hidden" name="acao" value="mudar_status">
+                                                    <input type="hidden" name="ordem_id" value="{{ ordem.id }}">
+                                                    <input type="hidden" name="novo_status" value="Retrabalho">
+                                                    <button type="submit" class="dropdown-item">Retrabalho</button>
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="col-12">
+                            <div class="card-tc text-center py-5 text-muted">
+                                <i class="fas fa-industry fa-2x mb-2 text-secondary opacity-50"></i>
+                                <p class="mb-0">Nenhuma ordem de produção encontrada nesta categoria.</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS para funcionamento dos menus e colapses -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
