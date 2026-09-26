@@ -37,13 +37,10 @@ class ContaPagar(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   descricao = db.Column(db.String(200), nullable=False)
   valor = db.Column(db.Float, nullable=False)
-  data_vencimento = db.Column(db.String(10), nullable=False)  # Formato: YYYY-MM-DD
-  status = db.Column(
-      db.String(20), default='Pendente'
-  )  # 'Pendente' ou 'Pago'
+  data_vencimento = db.Column(db.String(10), nullable=False)
+  status = db.Column(db.String(20), default='Pendente')
 
 
-# Cria o banco de dados automaticamente se não existir
 with app.app_context():
   db.create_all()
 
@@ -76,7 +73,6 @@ def dashboard():
   )
 
 
-# --- CONTROLE DE ESTOQUE E PRODUTOS ---
 @app.route('/produtos', methods=['GET', 'POST'])
 def produtos():
   if request.method == 'POST':
@@ -100,7 +96,6 @@ def produtos():
   return render_template('produtos.html', produtos=lista_produtos)
 
 
-# --- REGISTRO DE VENDAS (Com baixa automática no estoque) ---
 @app.route('/vendas', methods=['GET', 'POST'])
 def vendas():
   if request.method == 'POST':
@@ -110,7 +105,7 @@ def vendas():
     produto = Produto.query.get_or_404(produto_id)
 
     if produto.estoque < quantidade:
-      flash('Erro: Quantidade indisponível em estoque!')
+      flash('Erro: Quantidade indisponível em stock!')
       return redirect(url_for('vendas'))
 
     valor_total = produto.preco_venda * quantidade
@@ -122,7 +117,7 @@ def vendas():
     db.session.add(nova_venda)
     db.session.commit()
 
-    flash('Venda registrada e estoque atualizado com sucesso!')
+    flash('Venda registada e stock atualizado com sucesso!')
     return redirect(url_for('vendas'))
 
   lista_produtos = Produto.query.all()
@@ -132,7 +127,6 @@ def vendas():
   )
 
 
-# --- CONTROLE DE CONTAS A PAGAR ---
 @app.route('/contas-pagar', methods=['GET', 'POST'])
 def contas_pagar():
   if request.method == 'POST':
