@@ -76,20 +76,24 @@ def dashboard():
 @app.route('/produtos', methods=['GET', 'POST'])
 def produtos():
   if request.method == 'POST':
-    nome = request.form['nome']
-    preco_custo = float(request.form['preco_custo'])
-    preco_venda = float(request.form['preco_venda'])
-    estoque = int(request.form['estoque'])
+    try:
+      nome = request.form['nome']
+      preco_custo = float(request.form['preco_custo'])
+      preco_venda = float(request.form['preco_venda'])
+      estoque = int(request.form['estoque'])
 
-    novo_produto = Produto(
-        nome=nome,
-        preco_custo=preco_custo,
-        preco_venda=preco_venda,
-        estoque=estoque,
-    )
-    db.session.add(novo_produto)
-    db.session.commit()
-    flash('Produto cadastrado com sucesso!')
+      novo_produto = Produto(
+          nome=nome,
+          preco_custo=preco_custo,
+          preco_venda=preco_venda,
+          estoque=estoque,
+      )
+      db.session.add(novo_produto)
+      db.session.commit()
+      flash('Produto cadastrado com sucesso!')
+    except Exception as e:
+      db.session.rollback()
+      flash(f'Erro ao cadastrar produto: {str(e)}')
     return redirect(url_for('produtos'))
 
   lista_produtos = Produto.query.all()
@@ -99,25 +103,30 @@ def produtos():
 @app.route('/vendas', methods=['GET', 'POST'])
 def vendas():
   if request.method == 'POST':
-    produto_id = int(request.form['produto_id'])
-    quantidade = int(request.form['quantidade'])
+    try:
+      produto_id = int(request.form['produto_id'])
+      quantidade = int(request.form['quantidade'])
 
-    produto = Produto.query.get_or_404(produto_id)
+      produto = Produto.query.get_or_404(produto_id)
 
-    if produto.estoque < quantidade:
-      flash('Erro: Quantidade indisponível em stock!')
-      return redirect(url_for('vendas'))
+      if produto.estoque < quantidade:
+        flash('Erro: Quantidade solicitada indisponível em stock!')
+        return redirect(url_for('vendas'))
 
-    valor_total = produto.preco_venda * quantidade
-    produto.estoque -= quantidade
+      valor_total = produto.preco_venda * quantidade
+      produto.estoque -= quantidade
 
-    nova_venda = Venda(
-        produto_id=produto_id, quantidade=quantidade, valor_total=valor_total
-    )
-    db.session.add(nova_venda)
-    db.session.commit()
+      nova_venda = Venda(
+          produto_id=produto_id, quantidade=quantidade, valor_total=valor_total
+      )
+      db.session.add(nova_venda)
+      db.session.commit()
 
-    flash('Venda registada e stock atualizado com sucesso!')
+      flash('Venda registada e stock atualizado com sucesso!')
+    except Exception as e:
+      db.session.rollback()
+      flash(f'Erro ao processar venda: {str(e)}')
+
     return redirect(url_for('vendas'))
 
   lista_produtos = Produto.query.all()
@@ -130,19 +139,23 @@ def vendas():
 @app.route('/contas-pagar', methods=['GET', 'POST'])
 def contas_pagar():
   if request.method == 'POST':
-    descricao = request.form['descricao']
-    valor = float(request.form['valor'])
-    data_vencimento = request.form['data_vencimento']
+    try:
+      descricao = request.form['descricao']
+      valor = float(request.form['valor'])
+      data_vencimento = request.form['data_vencimento']
 
-    nova_conta = ContaPagar(
-        descricao=descricao,
-        valor=valor,
-        data_vencimento=data_vencimento,
-        status='Pendente',
-    )
-    db.session.add(nova_conta)
-    db.session.commit()
-    flash('Conta a pagar cadastrada com sucesso!')
+      nova_conta = ContaPagar(
+          descricao=descricao,
+          valor=valor,
+          data_vencimento=data_vencimento,
+          status='Pendente',
+      )
+      db.session.add(nova_conta)
+      db.session.commit()
+      flash('Conta a pagar cadastrada com sucesso!')
+    except Exception as e:
+      db.session.rollback()
+      flash(f'Erro ao cadastrar conta: {str(e)}')
     return redirect(url_for('contas_pagar'))
 
   contas = ContaPagar.query.order_by(ContaPagar.data_vencimento).all()
@@ -151,10 +164,14 @@ def contas_pagar():
 
 @app.route('/pagar-conta/<int:id>')
 def pagar_conta(id):
-  conta = ContaPagar.query.get_or_404(id)
-  conta.status = 'Pago'
-  db.session.commit()
-  flash('Conta marcada como paga!')
+  try:
+    conta = ContaPagar.query.get_or_404(id)
+    conta.status = 'Pago'
+    db.session.commit()
+    flash('Conta marcada como paga!')
+  except Exception as e:
+    db.session.rollback()
+    flash(f'Erro ao pagar conta: {str(e)}')
   return redirect(url_for('contas_pagar'))
 
 
