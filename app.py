@@ -5,7 +5,6 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
-# Configuração do Banco de Dados (funciona local e no Render)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
     'DATABASE_URL', 'sqlite:///tc_operacional.db'
 )
@@ -13,13 +12,11 @@ app.config['SECRET_KEY'] = 'tc_personalizados_secret_key_2026'
 db = SQLAlchemy(app)
 
 
-# --- MODELOS DE DADOS (CONTROLO INTERNO & PRODUÇÃO) ---
+# --- MODELOS DE DADOS ---
 class ProdutoMaterial(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   nome = db.Column(db.String(100), nullable=False)
-  tipo = db.Column(
-      db.String(50), nullable=False
-  )  # 'Produto Acabado' ou 'Matéria-Prima'
+  tipo = db.Column(db.String(50), nullable=False)
   categoria = db.Column(db.String(50), nullable=False)
   estoque_atual = db.Column(db.Integer, nullable=False, default=0)
   estoque_minimo = db.Column(db.Integer, nullable=False, default=5)
@@ -31,7 +28,7 @@ class MovimentacaoEstoque(db.Model):
   produto_id = db.Column(
       db.Integer, db.ForeignKey('produto_material.id'), nullable=False
   )
-  tipo = db.Column(db.String(30), nullable=False)  # Entrada, Saída, Ajuste
+  tipo = db.Column(db.String(30), nullable=False)
   quantidade = db.Column(db.Integer, nullable=False)
   motivo = db.Column(db.String(150), nullable=True)
   data = db.Column(db.DateTime, default=datetime.utcnow)
@@ -67,14 +64,12 @@ class SolicitacaoCompra(db.Model):
 class TransacaoFinanceira(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   descricao = db.Column(db.String(200), nullable=False)
-  tipo = db.Column(db.String(20), nullable=False)  # Receita ou Despesa
+  tipo = db.Column(db.String(20), nullable=False)
   categoria = db.Column(db.String(50), nullable=False)
   valor = db.Column(db.Float, nullable=False)
   data_vencimento = db.Column(db.String(10), nullable=False)
-  status = db.Column(db.String(20), default='Pendente')  # Pendente / Pago
-  natureza = db.Column(
-      db.String(20), nullable=False, default='Pagar'
-  )  # Pagar ou Receber
+  status = db.Column(db.String(20), default='Pendente')
+  natureza = db.Column(db.String(20), nullable=False, default='Pagar')
 
 
 class Funcionario(db.Model):
@@ -100,7 +95,7 @@ with app.app_context():
   db.create_all()
 
 
-# --- ROTAS PRINCIPAIS ---
+# --- ROTAS ---
 @app.route('/')
 def dashboard():
   producao_ativa = OrdemProducao.query.filter_by(
@@ -118,7 +113,6 @@ def dashboard():
   compras_pendentes = SolicitacaoCompra.query.filter_by(
       status='Pendente'
   ).count()
-
   itens_alerta = ProdutoMaterial.query.filter(
       ProdutoMaterial.estoque_atual <= ProdutoMaterial.estoque_minimo
   ).all()
@@ -155,36 +149,31 @@ def produtos():
         )
         db.session.add(novo)
         db.session.commit()
-        flash('Item registado com sucesso no inventário!')
+        flash('Item registado com sucesso!')
       elif acao == 'movimentar':
         item_id = int(request.form['item_id'])
         tipo_mov = request.form['tipo_movimentacao']
         qtd = int(request.form['quantidade'])
         motivo = request.form['motivo']
-
         item_est = ProdutoMaterial.query.get_or_404(item_id)
         if tipo_mov == 'Entrada':
           item_est.estoque_atual += qtd
         elif tipo_mov == 'Saída':
           if item_est.estoque_atual < qtd:
-            flash(
-                'Erro: Quantidade em estoque insuficiente para saída!',
-                'danger',
-            )
+            flash('Erro: Estoque insuficiente!', 'danger')
             return redirect(url_for('produtos'))
           item_est.estoque_atual -= qtd
         elif tipo_mov == 'Ajuste':
           item_est.estoque_atual = qtd
-
         mov = MovimentacaoEstoque(
             produto_id=item_id, tipo=tipo_mov, quantidade=qtd, motivo=motivo
         )
         db.session.add(mov)
         db.session.commit()
-        flash('Movimentação de estoque registada com sucesso!')
+        flash('Movimentação registada com sucesso!')
     except Exception as e:
       db.session.rollback()
-      flash(f'Erro na operação: {str(e)}', 'danger')
+      flash(f'Erro: {str(e)}', 'danger')
     return redirect(url_for('produtos'))
 
   itens = ProdutoMaterial.query.order_by(ProdutoMaterial.nome).all()
@@ -217,7 +206,7 @@ def producao():
         )
         db.session.add(nova_ordem)
         db.session.commit()
-        flash(f'Ordem {codigo} criada com sucesso!')
+        flash(f'Ordem {codigo} criada!')
       elif acao == 'avancar':
         ordem_id = int(request.form['ordem_id'])
         ordem = OrdemProducao.query.get_or_404(ordem_id)
@@ -236,7 +225,7 @@ def producao():
             if ordem.etapa == 'Finalizado':
               ordem.status = 'Finalizado'
           db.session.commit()
-          flash(f'Ordem {ordem.codigo} avançou para: {ordem.etapa}')
+          flash(f'Ordem avançou para: {ordem.etapa}')
       elif acao == 'mudar_status':
         ordem_id = int(request.form['ordem_id'])
         novo_status = request.form['novo_status']
@@ -246,7 +235,7 @@ def producao():
         flash(f'Status alterado para {novo_status}.')
     except Exception as e:
       db.session.rollback()
-      flash(f'Erro na produção: {str(e)}', 'danger')
+      flash(f'Erro: {str(e)}', 'danger')
     return redirect(url_for('producao'))
 
   filtro_status = request.args.get('status', 'Todos')
@@ -278,7 +267,7 @@ def compras():
       flash('Solicitação de compra registada!')
     except Exception as e:
       db.session.rollback()
-      flash(f'Erro nas compras: {str(e)}', 'danger')
+      flash(f'Erro: {str(e)}', 'danger')
     return redirect(url_for('compras'))
 
   lista_compras = SolicitacaoCompra.query.order_by(
@@ -306,10 +295,10 @@ def financeiro():
         )
         db.session.add(nova_transacao)
         db.session.commit()
-        flash('Lançamento financeiro registado com sucesso!')
+        flash('Lançamento financeiro registado!')
     except Exception as e:
       db.session.rollback()
-      flash(f'Erro no financeiro: {str(e)}', 'danger')
+      flash(f'Erro: {str(e)}', 'danger')
     return redirect(url_for('financeiro'))
 
   transacoes = TransacaoFinanceira.query.order_by(
@@ -357,7 +346,7 @@ def quitar_transacao(id):
   trans = TransacaoFinanceira.query.get_or_404(id)
   trans.status = 'Pago/Recebido'
   db.session.commit()
-  flash('Transação marcada como liquidada!')
+  flash('Transação liquidada!')
   return redirect(url_for('financeiro'))
 
 
@@ -419,7 +408,7 @@ def equipe():
       flash('Funcionário registado com sucesso!')
     except Exception as e:
       db.session.rollback()
-      flash(f'Erro ao registar funcionário: {str(e)}', 'danger')
+      flash(f'Erro: {str(e)}', 'danger')
     return redirect(url_for('equipe'))
 
   funcionarios = Funcionario.query.all()
@@ -437,17 +426,17 @@ def configuracoes():
         )
         db.session.add(nova_cat)
         db.session.commit()
-        flash('Categoria adicionada com sucesso!')
+        flash('Categoria adicionada!')
       elif acao == 'nova_forma_pagamento':
         nova_forma = FormaPagamento(nome=request.form['nome_pagamento'])
         db.session.add(nova_forma)
         db.session.commit()
-        flash('Forma de pagamento registada com sucesso!')
+        flash('Forma de pagamento registada!')
       elif acao == 'backup':
-        flash('Cópia de segurança gerada com sucesso!', 'success')
+        flash('Backup gerado com sucesso!', 'success')
     except Exception as e:
       db.session.rollback()
-      flash(f'Erro na configuração: {str(e)}', 'danger')
+      flash(f'Erro: {str(e)}', 'danger')
     return redirect(url_for('configuracoes'))
 
   categorias = CategoriaItem.query.all()

@@ -9,38 +9,38 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --bg-principal: #F8F5F2;
+            --bg-principal: #F4EFEA;
             --bg-card: #FFFFFF;
-            --rosé-principal: #C98F98;
-            --rosé-claro: #E8CDD0;
-            --rosé-destaque: #B97884;
-            --texto-principal: #332D2D;
-            --texto-secundario: #817474;
-            --borda-cor: #E8DFDC;
-            --verde-sucesso: #6F9B7A;
-            --amarelo-atencao: #C69B52;
-            --vermelho-alerta: #B96D6D;
+            --rosé-principal: #B87383;
+            --rosé-claro: #F2D6DC;
+            --rosé-destaque: #9E5364;
+            --texto-principal: #221B1B;
+            --texto-secundario: #5E5050;
+            --borda-cor: #D8CCC6;
+            --verde-sucesso: #4E8759;
+            --amarelo-atencao: #B07C38;
+            --vermelho-alerta: #A34848;
         }
 
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-principal); color: var(--texto-principal); }
-        h1, h2, h3, h4, h5 { font-family: 'Playfair Display', serif; color: var(--texto-principal); }
+        h1, h2, h3, h4, h5 { font-family: 'Playfair Display', serif; color: var(--texto-principal); font-weight: 700; }
 
-        .sidebar { min-height: 100vh; background-color: var(--bg-card); border-right: 1px solid var(--borda-cor); padding: 24px 16px; }
-        .sidebar-brand { text-align: center; padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px solid var(--borda-cor); }
-        .sidebar-brand h5 { font-size: 1.1rem; letter-spacing: 1px; margin-bottom: 0; }
-        .sidebar-brand span { font-size: 0.75rem; color: var(--texto-secundario); text-transform: uppercase; letter-spacing: 2px; }
+        .sidebar { min-height: 100vh; background-color: var(--bg-card); border-right: 2px solid var(--borda-cor); padding: 24px 16px; box-shadow: 2px 0 10px rgba(0,0,0,0.02); }
+        .sidebar-brand { text-align: center; padding-bottom: 20px; margin-bottom: 20px; border-bottom: 2px solid var(--borda-cor); }
+        .sidebar-brand h5 { font-size: 1.2rem; letter-spacing: 1.5px; margin-bottom: 0; color: var(--texto-principal); }
+        .sidebar-brand span { font-size: 0.75rem; color: var(--texto-secundario); text-transform: uppercase; letter-spacing: 2.5px; font-weight: 600; }
 
-        .sidebar .nav-link { color: var(--texto-secundario); font-weight: 500; padding: 10px 14px; margin-bottom: 6px; border-radius: 8px; transition: all 0.2s; display: flex; align-items: center; font-size: 0.95rem; }
-        .sidebar .nav-link i { width: 24px; color: var(--rosé-destaque); }
+        .sidebar .nav-link { color: var(--texto-secundario); font-weight: 500; padding: 11px 16px; margin-bottom: 6px; border-radius: 8px; transition: all 0.2s; display: flex; align-items: center; font-size: 0.95rem; }
+        .sidebar .nav-link i { width: 24px; color: var(--rosé-destaque); font-size: 1.05rem; }
         .sidebar .nav-link:hover, .sidebar .nav-link.active { background-color: var(--rosé-claro); color: var(--texto-principal); font-weight: 600; }
 
-        .topbar { background-color: var(--bg-card); border-bottom: 1px solid var(--borda-cor); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
-
-        .card-tc { background-color: var(--bg-card); border: 1px solid var(--borda-cor); border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(51, 45, 45, 0.03); margin-bottom: 24px; }
-        .form-control, .form-select { border-color: var(--borda-cor); background-color: #FAFAFA; font-size: 0.9rem; }
-        .form-control:focus, .form-select:focus { border-color: var(--rosé-principal); box-shadow: 0 0 0 0.2rem rgba(201, 143, 152, 0.25); background-color: #FFF; }
+        .topbar { background-color: var(--bg-card); border: 1px solid var(--borda-cor); padding: 18px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
+        .card-tc { background-color: var(--bg-card); border: 1px solid var(--borda-cor); border-radius: 12px; padding: 24px; box-shadow: 0 4px 12px rgba(34, 27, 27, 0.04); margin-bottom: 24px; }
         
-        .btn-tc { background-color: var(--rosé-principal); color: #FFF; border: none; font-weight: 500; padding: 8px 16px; border-radius: 8px; transition: background 0.2s; }
+        .form-control, .form-select { border-color: var(--borda-cor); background-color: #FAFAFA; color: var(--texto-principal); font-size: 0.9rem; font-weight: 500; }
+        .form-control:focus, .form-select:focus { border-color: var(--rosé-principal); box-shadow: 0 0 0 0.2rem rgba(184, 115, 131, 0.25); background-color: #FFF; }
+        
+        .btn-tc { background-color: var(--rosé-principal); color: #FFF; border: none; font-weight: 600; padding: 9px 18px; border-radius: 8px; transition: background 0.2s; }
         .btn-tc:hover { background-color: var(--rosé-destaque); color: #FFF; }
     </style>
 </head>
@@ -48,19 +48,25 @@
 
     <div class="container-fluid p-0">
         <div class="row g-0">
-            <!-- Sidebar -->
+            <!-- Sidebar Completa -->
             <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
                 <div class="sidebar-brand">
                     <h5>T&C</h5>
                     <span>Personalizados</span>
                 </div>
                 <ul class="nav flex-column">
-                    <li class="nav-item"><a class="nav-link" href="/"><i class="fas fa-home"></i> Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/produtos"><i class="fas fa-boxes"></i> Estoque & Produtos</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/producao"><i class="fas fa-industry"></i> Produção</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/compras"><i class="fas fa-shopping-basket"></i> Compras</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="/financeiro"><i class="fas fa-file-invoice-dollar"></i> Financeiro</a></li>
+                    <li class="nav-item"><a class="nav-link {{ 'active' if request.path == '/' else '' }}" href="/"><i class="fas fa-home"></i> Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link {{ 'active' if request.path == '/produtos' else '' }}" href="/produtos"><i class="fas fa-boxes"></i> Estoque & Produtos</a></li>
+                    <li class="nav-item"><a class="nav-link {{ 'active' if request.path == '/producao' else '' }}" href="/producao"><i class="fas fa-industry"></i> Produção</a></li>
+                    <li class="nav-item"><a class="nav-link {{ 'active' if request.path == '/compras' else '' }}" href="/compras"><i class="fas fa-shopping-basket"></i> Compras</a></li>
+                    <li class="nav-item"><a class="nav-link {{ 'active' if request.path == '/financeiro' else '' }}" href="/financeiro"><i class="fas fa-file-invoice-dollar"></i> Financeiro</a></li>
+                    <li class="nav-item"><a class="nav-link {{ 'active' if request.path == '/relatorios' else '' }}" href="/relatorios"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
+                    <li class="nav-item"><a class="nav-link {{ 'active' if request.path == '/equipe' else '' }}" href="/equipe"><i class="fas fa-users"></i> Equipe</a></li>
+                    <li class="nav-item"><a class="nav-link {{ 'active' if request.path == '/configuracoes' else '' }}" href="/configuracoes"><i class="fas fa-cog"></i> Configurações</a></li>
                 </ul>
+                <div class="mt-5 px-3 text-muted small" style="font-size: 0.8rem; font-weight: 600;">
+                    <i class="fas fa-circle text-success" style="font-size: 0.5rem;"></i> Controlo Interno Ativo
+                </div>
             </nav>
 
             <!-- Main Content -->
@@ -70,14 +76,14 @@
                         <h2 class="h4 mb-0 fw-bold">Módulo Financeiro</h2>
                         <p class="text-muted small mb-0">Controlo de contas a pagar, recebimentos, despesas e fluxo de caixa</p>
                     </div>
-                    <span class="text-muted small"><i class="fas fa-wallet me-1"></i> Caixa Operacional</span>
+                    <span class="text-muted small fw-semibold"><i class="fas fa-wallet me-1"></i> Caixa Operacional</span>
                 </div>
 
                 <div class="py-3">
                     {% with messages = get_flashed_messages(with_categories=true) %}
                         {% if messages %}
                             {% for cat, msg in messages %}
-                                <div class="alert alert-{{ 'danger' if cat == 'danger' else 'success' }} border-0 shadow-sm mb-4">{{ msg }}</div>
+                                <div class="alert alert-success border-0 shadow-sm mb-4 fw-semibold">{{ msg }}</div>
                             {% endfor %}
                         {% endif %}
                     {% endwith %}
@@ -87,13 +93,13 @@
                         <div class="col-md-3">
                             <div class="card-tc mb-0" style="border-left: 4px solid var(--vermelho-alerta);">
                                 <small class="text-uppercase text-muted fw-bold" style="font-size: 0.75rem;">A Pagar (Pendente)</small>
-                                <h4 class="fw-bold mt-2 mb-0">R$ {{ "%.2f"|format(total_a_pagar) }}</h4>
+                                <h4 class="fw-bold mt-2 mb-0" style="color: var(--vermelho-alerta);">R$ {{ "%.2f"|format(total_a_pagar) }}</h4>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="card-tc mb-0" style="border-left: 4px solid var(--verde-sucesso);">
                                 <small class="text-uppercase text-muted fw-bold" style="font-size: 0.75rem;">A Receber (Pendente)</small>
-                                <h4 class="fw-bold mt-2 mb-0">R$ {{ "%.2f"|format(total_a_receber) }}</h4>
+                                <h4 class="fw-bold mt-2 mb-0" style="color: var(--verde-sucesso);">R$ {{ "%.2f"|format(total_a_receber) }}</h4>
                             </div>
                         </div>
                         <div class="col-md-3">
@@ -175,23 +181,23 @@
                                     <tr>
                                         <td class="fw-bold text-dark">{{ t.descricao }}</td>
                                         <td>
-                                            <span class="badge bg-{{ 'danger' if t.natureza == 'Pagar' else 'success' }}">
+                                            <span class="badge bg-{{ 'danger' if t.natureza == 'Pagar' else 'success' }} fw-bold">
                                                 {{ t.natureza }}
                                             </span>
                                         </td>
-                                        <td>{{ t.categoria }}</td>
+                                        <td class="fw-semibold">{{ t.categoria }}</td>
                                         <td class="fw-bold">R$ {{ "%.2f"|format(t.valor) }}</td>
-                                        <td>{{ t.data_vencimento }}</td>
+                                        <td class="fw-semibold">{{ t.data_vencimento }}</td>
                                         <td>
-                                            <span class="badge bg-{{ 'warning text-dark' if t.status == 'Pendente' else 'secondary' }}">
+                                            <span class="badge bg-{{ 'warning text-dark' if t.status == 'Pendente' else 'secondary' }} fw-bold">
                                                 {{ t.status }}
                                             </span>
                                         </td>
                                         <td class="text-end">
                                             {% if t.status == 'Pendente' %}
-                                                <a href="/quitar-transacao/{{ t.id }}" class="btn btn-sm btn-outline-success">Liquidar</a>
+                                                <a href="/quitar-transacao/{{ t.id }}" class="btn btn-sm btn-outline-success fw-semibold">Liquidar</a>
                                             {% else %}
-                                                <span class="text-muted small">Quitado</span>
+                                                <span class="text-muted small fw-semibold">Quitado</span>
                                             {% endif %}
                                         </td>
                                     </tr>

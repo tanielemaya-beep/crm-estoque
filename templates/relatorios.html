@@ -9,52 +9,56 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --bg-principal: #F8F5F2;
+            --bg-principal: #F4EFEA;
             --bg-card: #FFFFFF;
-            --rosé-principal: #C98F98;
-            --rosé-claro: #E8CDD0;
-            --rosé-destaque: #B97884;
-            --texto-principal: #332D2D;
-            --texto-secundario: #817474;
-            --borda-cor: #E8DFDC;
-            --verde-sucesso: #6F9B7A;
+            --rosé-principal: #B87383;
+            --rosé-claro: #F2D6DC;
+            --rosé-destaque: #9E5364;
+            --texto-principal: #221B1B;
+            --texto-secundario: #5E5050;
+            --borda-cor: #D8CCC6;
+            --verde-sucesso: #4E8759;
         }
 
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-principal); color: var(--texto-principal); }
-        h1, h2, h3, h4, h5 { font-family: 'Playfair Display', serif; color: var(--texto-principal); }
+        h1, h2, h3, h4, h5 { font-family: 'Playfair Display', serif; color: var(--texto-principal); font-weight: 700; }
 
-        .sidebar { min-height: 100vh; background-color: var(--bg-card); border-right: 1px solid var(--borda-cor); padding: 24px 16px; }
-        .sidebar-brand { text-align: center; padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px solid var(--borda-cor); }
-        .sidebar-brand h5 { font-size: 1.1rem; letter-spacing: 1px; margin-bottom: 0; }
-        .sidebar-brand span { font-size: 0.75rem; color: var(--texto-secundario); text-transform: uppercase; letter-spacing: 2px; }
+        .sidebar { min-height: 100vh; background-color: var(--bg-card); border-right: 2px solid var(--borda-cor); padding: 24px 16px; box-shadow: 2px 0 10px rgba(0,0,0,0.02); }
+        .sidebar-brand { text-align: center; padding-bottom: 20px; margin-bottom: 20px; border-bottom: 2px solid var(--borda-cor); }
+        .sidebar-brand h5 { font-size: 1.2rem; letter-spacing: 1.5px; margin-bottom: 0; color: var(--texto-principal); }
+        .sidebar-brand span { font-size: 0.75rem; color: var(--texto-secundario); text-transform: uppercase; letter-spacing: 2.5px; font-weight: 600; }
 
-        .sidebar .nav-link { color: var(--texto-secundario); font-weight: 500; padding: 10px 14px; margin-bottom: 6px; border-radius: 8px; transition: all 0.2s; display: flex; align-items: center; font-size: 0.95rem; }
-        .sidebar .nav-link i { width: 24px; color: var(--rosé-destaque); }
+        .sidebar .nav-link { color: var(--texto-secundario); font-weight: 500; padding: 11px 16px; margin-bottom: 6px; border-radius: 8px; transition: all 0.2s; display: flex; align-items: center; font-size: 0.95rem; }
+        .sidebar .nav-link i { width: 24px; color: var(--rosé-destaque); font-size: 1.05rem; }
         .sidebar .nav-link:hover, .sidebar .nav-link.active { background-color: var(--rosé-claro); color: var(--texto-principal); font-weight: 600; }
 
-        .topbar { background-color: var(--bg-card); border-bottom: 1px solid var(--borda-cor); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
-
-        .card-tc { background-color: var(--bg-card); border: 1px solid var(--borda-cor); border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(51, 45, 45, 0.03); margin-bottom: 24px; }
+        .topbar { background-color: var(--bg-card); border: 1px solid var(--borda-cor); padding: 18px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
+        .card-tc { background-color: var(--bg-card); border: 1px solid var(--borda-cor); border-radius: 12px; padding: 24px; box-shadow: 0 4px 12px rgba(34, 27, 27, 0.04); margin-bottom: 24px; }
     </style>
 </head>
 <body>
 
     <div class="container-fluid p-0">
         <div class="row g-0">
-            <!-- Sidebar -->
+            <!-- Sidebar Completa -->
             <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
                 <div class="sidebar-brand">
                     <h5>T&C</h5>
                     <span>Personalizados</span>
                 </div>
                 <ul class="nav flex-column">
-                    <li class="nav-item"><a class="nav-link" href="/"><i class="fas fa-home"></i> Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/produtos"><i class="fas fa-boxes"></i> Estoque & Produtos</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/producao"><i class="fas fa-industry"></i> Produção</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/compras"><i class="fas fa-shopping-basket"></i> Compras</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/financeiro"><i class="fas fa-file-invoice-dollar"></i> Financeiro</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="/relatorios"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
+                    <li class="nav-item"><a class="nav-link {{ 'active' if request.path == '/' else '' }}" href="/"><i class="fas fa-home"></i> Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link {{ 'active' if request.path == '/produtos' else '' }}" href="/produtos"><i class="fas fa-boxes"></i> Estoque & Produtos</a></li>
+                    <li class="nav-item"><a class="nav-link {{ 'active' if request.path == '/producao' else '' }}" href="/producao"><i class="fas fa-industry"></i> Produção</a></li>
+                    <li class="nav-item"><a class="nav-link {{ 'active' if request.path == '/compras' else '' }}" href="/compras"><i class="fas fa-shopping-basket"></i> Compras</a></li>
+                    <li class="nav-item"><a class="nav-link {{ 'active' if request.path == '/financeiro' else '' }}" href="/financeiro"><i class="fas fa-file-invoice-dollar"></i> Financeiro</a></li>
+                    <li class="nav-item"><a class="nav-link {{ 'active' if request.path == '/relatorios' else '' }}" href="/relatorios"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
+                    <li class="nav-item"><a class="nav-link {{ 'active' if request.path == '/equipe' else '' }}" href="/equipe"><i class="fas fa-users"></i> Equipe</a></li>
+                    <li class="nav-item"><a class="nav-link {{ 'active' if request.path == '/configuracoes' else '' }}" href="/configuracoes"><i class="fas fa-cog"></i> Configurações</a></li>
                 </ul>
+                <div class="mt-5 px-3 text-muted small" style="font-size: 0.8rem; font-weight: 600;">
+                    <i class="fas fa-circle text-success" style="font-size: 0.5rem;"></i> Controlo Interno Ativo
+                </div>
             </nav>
 
             <!-- Main Content -->
@@ -64,36 +68,36 @@
                         <h2 class="h4 mb-0 fw-bold">Relatórios e Indicadores</h2>
                         <p class="text-muted small mb-0">Análise de estoque, desempenho de produção, compras e consumo de materiais</p>
                     </div>
-                    <span class="text-muted small"><i class="fas fa-chart-line me-1"></i> Inteligência Operacional</span>
+                    <span class="text-muted small fw-semibold"><i class="fas fa-chart-line me-1"></i> Inteligência Operacional</span>
                 </div>
 
                 <div class="py-3">
-                    <!-- Resumo Geral em Indicadores -->
+                    <!-- Resumo Geral -->
                     <div class="row g-4 mb-4">
                         <div class="col-md-4">
                             <div class="card-tc mb-0">
                                 <small class="text-uppercase text-muted fw-bold" style="font-size: 0.75rem;">Inventário Registado</small>
                                 <h3 class="fw-bold mt-2 mb-1">{{ total_produtos }} itens</h3>
-                                <span class="text-muted small">{{ total_materias_primas }} matérias-primas | {{ total_acabados }} produtos acabados</span>
+                                <span class="text-muted small fw-semibold">{{ total_materias_primas }} matérias-primas | {{ total_acabados }} produtos acabados</span>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="card-tc mb-0">
                                 <small class="text-uppercase text-muted fw-bold" style="font-size: 0.75rem;">Ordens de Produção</small>
                                 <h3 class="fw-bold mt-2 mb-1">{{ total_ordens }} ordens</h3>
-                                <span class="text-success small"><i class="fas fa-check-circle"></i> {{ ordens_concluidas }} concluídas com sucesso</span>
+                                <span class="text-success small fw-bold"><i class="fas fa-check-circle"></i> {{ ordens_concluidas }} concluídas com sucesso</span>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="card-tc mb-0">
                                 <small class="text-uppercase text-muted fw-bold" style="font-size: 0.75rem;">Fluxo de Caixa (Realizado)</small>
                                 <h3 class="fw-bold mt-2 mb-1 text-success">R$ {{ "%.2f"|format(total_receitas_realizadas) }}</h3>
-                                <span class="text-muted small">Despesas pendentes: R$ {{ "%.2f"|format(total_despesas_pendentes) }}</span>
+                                <span class="text-muted small fw-semibold">Despesas pendentes: R$ {{ "%.2f"|format(total_despesas_pendentes) }}</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Secção de Consumo de Materiais -->
+                    <!-- Consumo de Materiais -->
                     <div class="card-tc p-4 mb-4">
                         <h5 class="fw-bold mb-3" style="font-size: 1.1rem;"><i class="fas fa-chart-pie me-2 text-secondary"></i> Consumo Histórico de Materiais</h5>
                         <p class="text-muted small mb-4">Acompanhamento mensal do uso de insumos-chave para antecipar a necessidade de reposição e evitar desperdícios.</p>
@@ -111,10 +115,10 @@
                                     {% for reg in consumo_materiais %}
                                     <tr>
                                         <td class="fw-bold text-dark">{{ reg.mes }}</td>
-                                        <td>{{ reg.item }}</td>
-                                        <td class="fw-semibold">{{ reg.qtd }} unidades</td>
+                                        <td class="fw-semibold">{{ reg.item }}</td>
+                                        <td class="fw-bold">{{ reg.qtd }} unidades</td>
                                         <td class="text-end">
-                                            <span class="badge bg-light text-dark border">Estável</span>
+                                            <span class="badge bg-light text-dark border fw-semibold">Estável</span>
                                         </td>
                                     </tr>
                                     {% endfor %}
