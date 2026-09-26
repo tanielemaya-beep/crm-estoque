@@ -11,7 +11,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
 )
 app.config['SECRET_KEY'] = 'sua_chave_secreta_super_segura'
 db = SQLAlchemy(app)
-
+with app.app_context():
+  db.drop_all()  # Limpa as tabelas antigas com erro
+  db.create_all()  # Cria novamente do zero
 
 # --- MODELOS DE DADOS ---
 class Produto(db.Model):
@@ -104,15 +106,28 @@ def produtos():
 def vendas():
   if request.method == 'POST':
     try:
-      produto_id = int(request.form['produto_id'])
-      quantidade = int(request.form['quantidade'])
+      # Verifica se os campos vieram preenchidos
+      p_id = request.form.get('produto_id')
+      qtd = request.form.get('quantidade')
+
+      if not p_id or not qtd:
+        flash('Por favor, preencha todos os campos da venda.', 'danger')
+        return redirect(url_for('vendas'))
+
+      produto_id = int(p_id)
+      quantidade = int(qtd)
 
       produto = Produto.query.get_or_404(produto_id)
 
       if produto.estoque < quantidade:
-        flash('Erro: Quantidade solicitada indisponível em stock!')
+        flash(
+            f'Erro: Stock insuficiente! Restam apenas {produto.estoque}'
+            ' unidades.',
+            'danger',
+        )
         return redirect(url_for('vendas'))
 
+      # Calcula o valor total e desconta do stock
       valor_total = produto.preco_venda * quantidade
       produto.estoque -= quantidade
 
@@ -122,10 +137,10 @@ def vendas():
       db.session.add(nova_venda)
       db.session.commit()
 
-      flash('Venda registada e stock atualizado com sucesso!')
+      flash('Venda registada e stock atualizado com sucesso!', 'success')
     except Exception as e:
       db.session.rollback()
-      flash(f'Erro ao processar venda: {str(e)}')
+      flash(f'Erro interno ao processar a venda: {str(e)}', 'danger')
 
     return redirect(url_for('vendas'))
 
