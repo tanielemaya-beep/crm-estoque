@@ -1,36 +1,77 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-<head><meta charset="UTF-8"><title>Registro de Vendas</title></head>
-<body>
-    <h1>Registrar Venda (Baixa Automática no Estoque)</h1>
-    <a href="/">Voltar ao Início</a> | <a href="/produtos">Gerenciar Produtos</a>
-    <hr>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registo de Vendas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">📊 Gestão T&C</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/">Dashboard</a>
+                <a class="nav-link" href="/produtos">Stock</a>
+                <a class="nav-link active" href="/vendas">Vendas</a>
+                <a class="nav-link" href="/contas-pagar">Contas a Pagar</a>
+            </div>
+        </div>
+    </nav>
 
-    <form method="POST">
-        <label>Selecione o Produto:</label><br>
-        <select name="produto_id" required>
-            {% for p in produtos %}
-                <option value="{{ p.id }}">{{ p.nome }} (Estoque: {{ p.estoque }} | R$ {{ p.preco_venda }})</option>
-            {% endfor %}
-        </select><br><br>
+    <div class="container my-4">
+        <h2>Registar Venda (Baixa Automática no Stock)</h2>
+        <hr>
 
-        <label>Quantidade Vendida:</label><br>
-        <input type="number" name="quantidade" min="1" required><br><br>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="alert alert-info">{{ messages[0] }}</div>
+            {% endif %}
+        {% endwith %}
 
-        <button type="submit">Finalizar Venda</button>
-    </form>
+        <div class="card shadow-sm border-0 p-4 mb-4">
+            <form method="POST">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Selecione o Produto:</label>
+                        <select name="produto_id" class="form-select" required>
+                            {% for p in produtos %}
+                                <option value="{{ p.id }}">{{ p.nome }} (Stock: {{ p.estoque }} | R$ {{ "%.2f"|format(p.preco_venda) }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Quantidade Vendida:</label>
+                        <input type="number" name="quantidade" min="1" class="form-control" required>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-success w-100">Finalizar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
 
-    <h2>Histórico de Vendas</h2>
-    <table border="1" cellpadding="5">
-        <tr><th>Data</th><th>Produto</th><th>Qtd</th><th>Total (R$)</th></tr>
-        {% for v in vendas %}
-        <tr>
-            <td>{{ v.data.strftime('%d/%m/%Y %H:%M') }}</td>
-            <td>{{ v.produto.nome }}</td>
-            <td>{{ v.quantidade }}</td>
-            <td>R$ {{ v.valor_total }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h5 class="mb-3">Histórico de Vendas</h5>
+                <table class="table table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr><th>Data</th><th>Produto</th><th>Qtd</th><th>Total (R$)</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for v in vendas %}
+                        <tr>
+                            <td>{{ v.data.strftime('%d/%m/%Y %H:%M') }}</td>
+                            <td>{{ v.produto.nome }}</td>
+                            <td>{{ v.quantidade }}</td>
+                            <td>R$ {{ "%.2f"|format(v.valor_total) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

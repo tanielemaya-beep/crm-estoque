@@ -2,31 +2,70 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard - Controle Financeiro e Estoque</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Controle Financeiro e Stock</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <h1>Painel Geral</h1>
-    <hr>
-    <ul>
-        <li><strong>Total de Vendas (Receitas):</strong> R$ {{ total_vendas }}</li>
-        <li><strong>Contas a Pagar (Pendentes):</strong> R$ {{ total_a_pagar }}</li>
-        <li><strong>Contas Já Pagas:</strong> R$ {{ total_pago }}</li>
-    </ul>
+<body class="bg-light">
+    
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">📊 Gestão T&C</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link active" href="/">Dashboard</a>
+                <a class="nav-link" href="/produtos">Stock</a>
+                <a class="nav-link" href="/vendas">Vendas</a>
+                <a class="nav-link" href="/contas-pagar">Contas a Pagar</a>
+            </div>
+        </div>
+    </nav>
 
-    <h2>Menu de Navegação</h2>
-    <ul>
-        <li><a href="/produtos">Gerenciar Produtos e Estoque</a></li>
-        <li><a href="/vendas">Registrar Vendas</a></li>
-        <li><a href="/contas-pagar">Controle de Contas a Pagar</a></li>
-    </ul>
+    <div class="container my-4">
+        <h2 class="mb-4 text-dark">Painel Geral</h2>
 
-    <h3>🚨 Alertas de Estoque Baixo (<= 5 unidades)</h3>
-    <ul>
-        {% for p in produtos_criticos %}
-            <li>{{ p.nome }} - Restam apenas: {{ p.estoque }} unidades</li>
-        {% else %}
-            <li>Nenhum produto em estoque crítico no momento.</li>
-        {% endfor %}
-    </ul>
+        <!-- Cards Financeiros -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="card shadow-sm border-0 bg-success text-white">
+                    <div class="card-body">
+                        <h6 class="card-title">Total de Vendas (Receitas)</h6>
+                        <h3>R$ {{ "%.2f"|format(total_vendas) }}</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm border-0 bg-warning text-dark">
+                    <div class="card-body">
+                        <h6 class="card-title">Contas a Pagar (Pendentes)</h6>
+                        <h3>R$ {{ "%.2f"|format(total_a_pagar) }}</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm border-0 bg-secondary text-white">
+                    <div class="card-body">
+                        <h6 class="card-title">Contas Já Pagas</h6>
+                        <h3>R$ {{ "%.2f"|format(total_pago) }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alertas de Stock Crítico -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-danger text-white fw-bold">🚨 Alertas de Stock Baixo (&le; 5 unidades)</div>
+            <div class="card-body">
+                <ul class="mb-0">
+                    {% for p in produtos_criticos %}
+                        <li class="text-danger"><strong>{{ p.nome }}</strong> - Restam apenas: {{ p.estoque }} unidades</li>
+                    {% else %}
+                        <li class="text-success">Nenhum produto em stock crítico no momento. Tudo sob controlo!</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>
