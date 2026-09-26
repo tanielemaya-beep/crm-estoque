@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 import os
 from flask import Flask, flash, redirect, render_template, request, url_for
 from flask_sqlalchemy import SQLAlchemy
@@ -16,7 +16,7 @@ db = SQLAlchemy(app)
 class ProdutoMaterial(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   nome = db.Column(db.String(100), nullable=False)
-  tipo = db.Column(db.String(50), nullable=False)
+  tipo = db.Column(db.String(50), nullable=False)  # 'Matéria-Prima' ou 'Produto Acabado'
   categoria = db.Column(db.String(50), nullable=False)
   estoque_atual = db.Column(db.Integer, nullable=False, default=0)
   estoque_minimo = db.Column(db.Integer, nullable=False, default=5)
@@ -28,7 +28,7 @@ class MovimentacaoEstoque(db.Model):
   produto_id = db.Column(
       db.Integer, db.ForeignKey('produto_material.id'), nullable=False
   )
-  tipo = db.Column(db.String(30), nullable=False)
+  tipo = db.Column(db.String(30), nullable=False)  # Entrada, Saída, Ajuste
   quantidade = db.Column(db.Integer, nullable=False)
   motivo = db.Column(db.String(150), nullable=True)
   data = db.Column(db.DateTime, default=datetime.utcnow)
@@ -43,13 +43,15 @@ class OrdemProducao(db.Model):
   produto = db.Column(db.String(100), nullable=False)
   quantidade = db.Column(db.Integer, nullable=False)
   responsavel = db.Column(db.String(50), nullable=False)
-  prazo = db.Column(db.String(20), nullable=True)
+  prazo = db.Column(db.String(20), nullable=True)  # Formato YYYY-MM-DD
   materiais = db.Column(db.String(250), nullable=True)
   observacoes = db.Column(db.Text, nullable=True)
   etapa = db.Column(
       db.String(50), nullable=False, default='Separação de material'
   )
-  status = db.Column(db.String(30), nullable=False, default='Em produção')
+  status = db.Column(
+      db.String(30), nullable=False, default='Em produção'
+  )  # Em produção, Pausado, Finalizado, Retrabalho
   data_inicio = db.Column(db.DateTime, default=datetime.utcnow)
 
 
@@ -64,10 +66,10 @@ class SolicitacaoCompra(db.Model):
 class TransacaoFinanceira(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   descricao = db.Column(db.String(200), nullable=False)
-  tipo = db.Column(db.String(20), nullable=False)
+  tipo = db.Column(db.String(20), nullable=False)  # Receita ou Despesa
   categoria = db.Column(db.String(50), nullable=False)
   valor = db.Column(db.Float, nullable=False)
-  data_vencimento = db.Column(db.String(10), nullable=False)
+  data_vencimento = db.Column(db.String(10), nullable=False)  # YYYY-MM-DD
   status = db.Column(db.String(20), default='Pendente')
   natureza = db.Column(db.String(20), nullable=False, default='Pagar')
 
@@ -95,7 +97,7 @@ with app.app_context():
   db.create_all()
 
 
-# --- ROTAS ---
+# --- ROTAS PRINCIPAIS ---
 @app.route('/')
 def dashboard():
   producao_ativa = OrdemProducao.query.filter_by(
@@ -113,6 +115,7 @@ def dashboard():
   compras_pendentes = SolicitacaoCompra.query.filter_by(
       status='Pendente'
   ).count()
+
   itens_alerta = ProdutoMaterial.query.filter(
       ProdutoMaterial.estoque_atual <= ProdutoMaterial.estoque_minimo
   ).all()
@@ -122,6 +125,14 @@ def dashboard():
       .all()
   )
 
+  # Verifica ordens em atraso
+  hoje_str = date.today().isoformat()
+  ordens_atrasadas = OrdemProducao.query.filter(
+      OrdemProducao.status == 'Em produção',
+      OrdemProducao.prazo < hoje_str,
+      OrdemProducao.prazo != '',
+  ).all()
+
   return render_template(
       'dashboard.html',
       producao_ativa=producao_ativa,
@@ -130,6 +141,7 @@ def dashboard():
       compras_pendentes=compras_pendentes,
       itens_alerta=itens_alerta,
       contas_atencao=contas_atencao,
+      ordens_atrasadas=ordens_atrasadas,
   )
 
 
@@ -185,6 +197,25 @@ def produtos():
   )
 
 
+@app.route('/gerar-compra-critica/<int:produto_id>')
+def gerar_compra_critica(produto_id):
+  item = ProdutoMaterial.query.get_or_404(produto_id)
+  # Cria automaticamente uma solicitação de compra baseada no estoque mínimo
+  qtd_sugerida = max(10, item.estoque_minimo * 2)
+  solicitacao = SolicitacaoCompra(
+      item=item.nome,
+      quantidade=qtd_sugerida,
+      fornecedor='Reposição Automática de Estoque',
+      status='Pendente',
+  )
+  db.session.add(solicitacao)
+  db.session.commit()
+  flash(
+      f'Solicitação de compra gerada com sucesso para o item "{item.nome}"!'
+  )
+  return redirect(url_for('compras'))
+
+
 @app.route('/producao', methods=['GET', 'POST'])
 def producao():
   if request.method == 'POST':
@@ -224,6 +255,19 @@ def producao():
             ordem.etapa = etapas[idx + 1]
             if ordem.etapa == 'Finalizado':
               ordem.status = 'Finalizado'
+              # MELHORIA: Baixa automática ou entrada no estoque de produto acabado
+              prod_acabado = ProdutoMaterial.query.filter_by(
+                  nome=ordem.produto, tipo='Produto Acabado'
+              ).first()
+              if prod_acabado:
+                prod_acabado.estoque_atual += ordem.quantidade
+                mov = MovimentacaoEstoque(
+                    produto_id=prod_acabado.id,
+                    tipo='Entrada',
+                    quantidade=ordem.quantidade,
+                    motivo=f'Produção concluída ({ordem.codigo})',
+                )
+                db.session.add(mov)
           db.session.commit()
           flash(f'Ordem avançou para: {ordem.etapa}')
       elif acao == 'mudar_status':
@@ -247,8 +291,13 @@ def producao():
     )
   else:
     ordens = OrdemProducao.query.order_by(OrdemProducao.id.desc()).all()
+
+  hoje_str = date.today().isoformat()
   return render_template(
-      'producao.html', ordens=ordens, filtro_atual=filtro_status
+      'producao.html',
+      ordens=ordens,
+      filtro_atual=filtro_status,
+      hoje_str=hoje_str,
   )
 
 
@@ -301,9 +350,15 @@ def financeiro():
       flash(f'Erro: {str(e)}', 'danger')
     return redirect(url_for('financeiro'))
 
-  transacoes = TransacaoFinanceira.query.order_by(
-      TransacaoFinanceira.data_vencimento
-  ).all()
+  # Filtro por Mês (Ex: 2026-09)
+  mes_filtro = request.args.get('mes', '')
+
+  query = TransacaoFinanceira.query
+  if mes_filtro:
+    query = query.filter(TransacaoFinanceira.data_vencimento.like(f'{mes_filtro}%'))
+
+  transacoes = query.order_by(TransacaoFinanceira.data_vencimento).all()
+
   total_a_pagar = (
       db.session.query(db.func.sum(TransacaoFinanceira.valor))
       .filter_by(natureza='Pagar', status='Pendente')
@@ -338,6 +393,7 @@ def financeiro():
       total_pago=total_pago,
       total_recebido=total_recebido,
       saldo_caixa=saldo_caixa,
+      mes_filtro=mes_filtro,
   )
 
 
