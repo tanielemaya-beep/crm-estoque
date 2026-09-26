@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - Controle Financeiro e Estoque</title>
+</head>
+<body>
+    <h1>Painel Geral</h1>
+    <hr>
+    <ul>
+        <li><strong>Total de Vendas (Receitas):</strong> R$ {{ total_vendas }}</li>
+        <li><strong>Contas a Pagar (Pendentes):</strong> R$ {{ total_a_pagar }}</li>
+        <li><strong>Contas Já Pagas:</strong> R$ {{ total_pago }}</li>
+    </ul>
+
+    <h2>Menu de Navegação</h2>
+    <ul>
+        <li><a href="/produtos">Gerenciar Produtos e Estoque</a></li>
+        <li><a href="/vendas">Registrar Vendas</a></li>
+        <li><a href="/contas-pagar">Controle de Contas a Pagar</a></li>
+    </ul>
+
+    <h3>🚨 Alertas de Estoque Baixo (<= 5 unidades)</h3>
+    <ul>
+        {% for p in produtos_criticos %}
+            <li>{{ p.nome }} - Restam apenas: {{ p.estoque }} unidades</li>
+        {% else %}
+            <li>Nenhum produto em estoque crítico no momento.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

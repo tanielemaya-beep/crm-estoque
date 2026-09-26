@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head><meta charset="UTF-8"><title>Produtos e Estoque</title></head>
+<body>
+    <h1>Cadastro e Estoque de Produtos</h1>
+    <a href="/">Voltar ao Início</a> | <a href="/vendas">Ir para Vendas</a>
+    <hr>
+    
+    <form method="POST">
+        <label>Nome do Produto:</label><br>
+        <input type="text" name="nome" required><br><br>
+        
+        <label>Preço de Custo (R$):</label><br>
+        <input type="number" step="0.01" name="preco_custo" required><br><br>
+        
+        <label>Preço de Venda (R$):</label><br>
+        <input type="number" step="0.01" name="preco_venda" required><br><br>
+        
+        <label>Quantidade em Estoque:</label><br>
+        <input type="number" name="estoque" required><br><br>
+        
+        <button type="submit">Cadastrar Produto</button>
+    </form>
+
+    <h2>Lista de Produtos</h2>
+    <table border="1" cellpadding="5">
+        <tr><th>Nome</th><th>Custo</th><th>Venda</th><th>Estoque</th></tr>
+        {% for p in produtos %}
+        <tr>
+            <td>{{ p.nome }}</td>
+            <td>R$ {{ p.preco_custo }}</td>
+            <td>R$ {{ p.preco_venda }}</td>
+            <td>{{ p.estoque }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head><meta charset="UTF-8"><title>Registro de Vendas</title></head>
+<body>
+    <h1>Registrar Venda (Baixa Automática no Estoque)</h1>
+    <a href="/">Voltar ao Início</a> | <a href="/produtos">Gerenciar Produtos</a>
+    <hr>
+
+    <form method="POST">
+        <label>Selecione o Produto:</label><br>
+        <select name="produto_id" required>
+            {% for p in produtos %}
+                <option value="{{ p.id }}">{{ p.nome }} (Estoque: {{ p.estoque }} | R$ {{ p.preco_venda }})</option>
+            {% endfor %}
+        </select><br><br>
+
+        <label>Quantidade Vendida:</label><br>
+        <input type="number" name="quantidade" min="1" required><br><br>
+
+        <button type="submit">Finalizar Venda</button>
+    </form>
+
+    <h2>Histórico de Vendas</h2>
+    <table border="1" cellpadding="5">
+        <tr><th>Data</th><th>Produto</th><th>Qtd</th><th>Total (R$)</th></tr>
+        {% for v in vendas %}
+        <tr>
+            <td>{{ v.data.strftime('%d/%m/%Y %H:%M') }}</td>
+            <td>{{ v.produto.nome }}</td>
+            <td>{{ v.quantidade }}</td>
+            <td>R$ {{ v.valor_total }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
